@@ -172,7 +172,9 @@ int main(int argc, char **argv)
                         "-r - Validate a GP 2 rule.\n"
                         "-h - Validate a GP 2 host graph.\n"
                         "-l - Specify root directory of installed files.\n"
-                        "-o - Specify directory for generated code and program output.\n";
+                        "-o - Specify directory for generated code and program output.\n"
+                        "--max-nodes - Specify maximum number of nodes in a host graph.\n"
+                        "--max-edges - Specify maximum number of edges in a host graph.\n";
 
    /* If true, only parsing and semantic analysis executed on the GP2 source files. */
    bool validate = false;
@@ -187,7 +189,7 @@ int main(int argc, char **argv)
 
    if(strcmp(argv[1], "-p") == 0)
    {
-      if(argc != 3)
+      if(argc < 3)
       {
          print_to_console("%s", usage);
          return 0; 
@@ -197,7 +199,7 @@ int main(int argc, char **argv)
    }
    else if(strcmp(argv[1], "-h") == 0)
    {
-      if(argc != 3)
+      if(argc < 3)
       {
          print_to_console("%s", usage);
          return 0; 
@@ -207,7 +209,7 @@ int main(int argc, char **argv)
    }
    else if(strcmp(argv[1], "-r") == 0)
    {
-      if(argc != 3)
+      if(argc < 3)
       {
          print_to_console("%s", usage);
          return 0; 
@@ -268,6 +270,32 @@ int main(int argc, char **argv)
       program_file = argv[argv_index];
    }
 
+   long max_nodes = HOST_NODE_SIZE;
+   long max_edges = HOST_EDGE_SIZE;
+
+   for (int i = 1; i < argc; i++)
+   {
+        if (strcmp(argv[i], "--max-nodes") == 0)
+        {
+            if(argc < i+2)
+            {
+                print_to_console("%s", usage);
+                return EXIT_FAILURE; 
+            }
+            max_nodes = strtonum(argv[i+1], 0, HOST_NODE_SIZE, "Max node size invalid");
+        }
+        if (strcmp(argv[i], "--max-edges") == 0)
+        {
+            if(argc < i+2)
+            {
+                print_to_console("%s", usage);
+                return EXIT_FAILURE; 
+            }
+            max_edges = strtonum(argv[i+1], 0, HOST_EDGE_SIZE, "Max edge size invalid");
+        }
+   }
+
+
    /* If no output directory specified, make a directory in /tmp. */
    if(output_dir == NULL) 
    {
@@ -325,7 +353,7 @@ int main(int argc, char **argv)
       {
          print_to_console("Generating program code...\n");
          generateRules(gp_program, output_dir);
-         generateRuntimeMain(gp_program, output_dir);
+         generateRuntimeMain(gp_program, output_dir, max_nodes, max_edges);
          printMakeFile(output_dir, install_dir);
       }
    }

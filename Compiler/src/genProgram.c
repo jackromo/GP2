@@ -77,7 +77,8 @@ static bool neverFails(GPCommand *command);
 static bool nullCommand(GPCommand *command);
 static bool singleRule(GPCommand *command);
 
-void generateRuntimeMain(List *declarations, string output_dir)
+void generateRuntimeMain(List *declarations, string output_dir,
+                         long max_nodes, long max_edges)
 {
    int length = strlen(output_dir) + 7;
    char main_file[length];
@@ -130,8 +131,8 @@ void generateRuntimeMain(List *declarations, string output_dir)
    PTFI("perror(host_file);\n", 6);
    PTFI("return NULL;\n", 6);
    PTFI("}\n\n", 3);
-   PTFI("host = newGraph(%d, %d);\n", 3, HOST_NODE_SIZE, HOST_EDGE_SIZE);
-   PTFI("node_map = calloc(%d, sizeof(int));\n", 3, HOST_NODE_SIZE);
+   PTFI("host = newGraph(%d, %d);\n", 3, max_nodes, max_edges);
+   PTFI("node_map = calloc(%d, sizeof(int));\n", 3, max_nodes);
    PTFI("if(node_map == NULL)\n", 3);
    PTFI("{\n", 3);
    PTFI("freeGraph(host);\n", 6);

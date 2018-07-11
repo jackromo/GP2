@@ -38,7 +38,12 @@
 #include <stdio.h> 
 #include <string.h> 
 
-void generateRuntimeMain(List *declarations, string output_dir);
+void generateRuntimeMain(List *declarations, string output_dir,
+                         long max_nodes, long max_edges);
+
+/* Arguments passed to the newGraph function at runtime. */
+#define HOST_NODE_SIZE 128
+#define HOST_EDGE_SIZE 128
 
 /* Each GP 2 control construct is translated into a fragment of C code. 
  * I give the "broad strokes" translation here, excluding the more fiddly
